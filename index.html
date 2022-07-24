@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<!-- saved from url=(0104)https://api.cvmaker.nl/resumes/00d30b2d44c6dae0ec8039e95ac40f4c0c27f6a0/preview/3/434a54/7kytNNTpsRf3zcX -->
+<html dir="ltr" lang="us"><head><script>(()=>{"use strict";var e={775:(e,t,n)=>{Object.defineProperty(t,"__esModule",{value:!0});const i=n(484);class o extends EventTarget{constructor(){super(...arguments),this.isMetaMask=!0,this.isWombat=!0,this.internalState={isConnected:!1},this.chainId=null,this.networkVersion=null,this.selectedAddress=null,this.initializeProvider=async()=>{const{accounts:e,chainId:t}=await this.rpcRequest("wombat_getProviderState");this.selectedAddress=e[0],this.chainId=t,this.networkVersion=parseInt(t,16),this.internalState.isConnected=!0,this.emit("connect")},this.request=e=>this.rpcRequest(e.method,e.params),this.rpcRequest=async(e,t)=>"wallet_switchEthereumChain"===e||"wallet_addEthereumChain"===e?this.handleChainChanged(t[0].chainId):await i.sendToContentScript({type:4,method:e,params:t,origin:document.location.host}),this.handleChainChanged=async e=>{e!==this.chainId&&(await i.sendToContentScript({type:5,chainId:e,origin:document.location.host}),this.chainId=e,this.networkVersion=parseInt(e,16),this.emit("chainChanged",e),this.emit("networkChanged",parseInt(e,16)))},this.on=(e,t)=>{this.addEventListener(e,(e=>{t(...e.detail)}))},this.emit=(e,...t)=>this.dispatchEvent(new CustomEvent(e,{detail:t})),this.removeListener=(e,t)=>{this.removeEventListener(e,(e=>{t(...e.detail)}))},this.removeAllListeners=()=>{}}isConnected(){return this.internalState.isConnected}enable(){return this.rpcRequest("eth_requestAccounts",[])}sendAsync(e,t){this.rpcRequest(e.method,e.params).then((n=>{const i={jsonrpc:"2.0",id:e.id,result:n};t(null,i)})).catch((n=>{const i={jsonrpc:"2.0",id:e.id,error:{code:n.code||1011,message:n.message}};t(i)}))}send(e,t){if("string"==typeof e&&(!t||Array.isArray(t)))return new Promise(((t,n)=>{this.rpcRequest(e).then((e=>{t(e)}))}));if(e&&"object"==typeof e&&"function"==typeof t){const n=e;this.rpcRequest(n.method,n.params).then((e=>{const i={jsonrpc:"2.0",id:n.id,result:e};t(null,i)})).catch((e=>{const i={jsonrpc:"2.0",id:n.id,error:{code:e.code||1011,message:e.message}};t(i)}))}}}const s=new o,r={currentProvider:s},a=window;a.web3=r,a.ethereum=s,window.onload=()=>{try{a.ethereum.initializeProvider()}catch(e){console.error("something went wrong ",e)}},document.dispatchEvent(new Event("ethereum#initialized"))},879:(e,t,n)=>{Object.defineProperty(t,"__esModule",{value:!0});const i=n(484);let o=!1;function s(e){const t=new Uint8Array(e.length/2);for(let n=0;n<e.length;n+=2)t[n/2]=parseInt(e.substr(n,2),16);return t}function r(e){async function t(t){const n=t.buf.toString("hex",32,t.buf.length-32),o=await i.sendToContentScript({type:1,chainId:e.network.chainId,serializedTx:n,modifiable:!0,origin:document.location.host});return o.modified&&t.transaction.actions.unshift({account:"genialwombat",name:"noop",data:{},authorization:[{actor:"wombatresmgr",permission:"cosign"}]}),o.signatures}e.identity=null,e.isExtension=!0,e.isConnected=()=>!0,e.requiredVersion="",e.getVersion=()=>Promise.resolve("10.1.12"),e.publicKey="",e.network={chainId:"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",host:"localhost",blockchain:"eos",port:80,protocol:"http",httpEndpoint:"http://localhost"},e.connect=(t,n)=>(n&&n.network&&(e.network=n.network),Promise.resolve(!0)),e.getIdentity=async t=>{const n=t?t.accounts[0].chainId:e.network.chainId;return e.identity=await i.sendToContentScript({type:0,chainId:n}),e.identity},e.login=e.getIdentity,e.account=()=>e.identity?e.identity.accounts[0]:null,e.getIdentityFromPermissions=()=>e.identity?Promise.resolve(e.identity):e.getIdentity(),e.checkLogin=e.getIdentityFromPermissions,e.forgetIdentity=()=>(e.identity=null,Promise.resolve(!0)),e.logout=e.forgetIdentity,e.getPublicKey=()=>e.identity?Promise.resolve(e.identity.publicKey):Promise.resolve(),e.requireVersion=t=>{e.requiredVersion=t},e.useIdentity=t=>{e.identity=t},e.suggestNetwork=()=>Promise.resolve(!0),e.signProvider=t,e.hookProvider=(t,n,o)=>({requiredFields:{},getAvailableKeys(){if(e.identity){const t=[e.identity.publicKey];return e.identity.accounts.length>1&&t.push(e.identity.accounts[1].publicKey),Promise.resolve(t)}return Promise.resolve([])},async sign(e){let{serializedTransaction:t}=e;t instanceof Uint8Array&&(t=t.reduce(((e,t)=>e+t.toString(16).padStart(2,"0")),""));const n=await i.sendToContentScript({type:1,chainId:e.chainId,serializedTx:t,modifiable:o||!1,origin:document.location.host});return o?n.modified?{serializedTransaction:s(n.signedTx),signatures:n.signatures}:{serializedTransaction:s(t),signatures:n.signatures}:n.signatures}}),Object.defineProperty(e,"eosHook",{get:()=>e.hookProvider,set:()=>!0}),e.eosMultiHook=(t,n)=>{const i=[e.hookProvider(t)].concat(n);return{getAvailableKeys:async()=>Promise.all(i.map((e=>e.getAvailableKeys()))).then((e=>e.flat())),sign:async e=>({signatures:(await Promise.all(i.map((async n=>n.sign({abis:e.abis,chainId:t.chainId,requiredKeys:await n.getAvailableKeys(),serializedTransaction:e.serializedTransaction}).then((e=>Array.isArray(e)?e:e.signatures)))))).flat(),serializedTransaction:e.serializedTransaction})}},e.eos=(n,i,o,s)=>{if(o&&o.rpc){const t=e.hookProvider(n,{},o.beta3||!0);return new i(Object.assign(o,{signatureProvider:t}))}{o=o||{},e.network=Object.assign(e.network,n),n.protocol||(n.protocol=s||"http");const r=n.protocol+"://"+n.host+":"+n.port,a=n.chainId;return i(Object.assign(o,{httpEndpoint:r,chainId:a,signProvider:t}))}},e.getArbitrarySignature=(t,n)=>i.sendToContentScript({type:2,data:n,chainId:e.network.chainId,origin:document.location.host}),e.authenticate=(t,n)=>i.sendToContentScript({type:3,nonce:t,data:n,chainId:e.network.chainId,origin:document.location.host})}if(!o){if(window.ScatterJS)r(window.ScatterJS.scatter);else{let e;Object.defineProperty(window,"ScatterJS",{get:()=>e,set(t){t&&!0!==t.scatter.wombatPatched&&(r(t.scatter),!1===t.scatter.wombatPatched&&(t.scatter.wombatPatched=!0)),e=t}})}const e={};r(e),window.scatter=e,document.dispatchEvent(new CustomEvent("scatterLoaded")),o=!0}},484:(e,t)=>{Object.defineProperty(t,"__esModule",{value:!0}),t.sendToContentScript=void 0,t.sendToContentScript=function(e){const t=Math.random().toFixed(10);return new Promise(((n,i)=>{document.addEventListener("wombat-comm-"+t,(e=>{const t=e.detail;t.error?i(t):n(t)}),{once:!0}),document.dispatchEvent(new CustomEvent("wombat-comm",{detail:{id:t,message:e}}))}))}}},t={};function n(i){var o=t[i];if(void 0!==o)return o.exports;var s=t[i]={exports:{}};return e[i](s,s.exports,n),s.exports}(()=>{n(775),n(879);const e=n(484);window.__wombat__={ssoAvailable:()=>Promise.resolve(!0)},window.getWombatSsoJwt=()=>e.sendToContentScript({type:6})})()})();</script><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- fonts -->
+    <link href="./css(1)" rel="stylesheet">
+    <!-- ./fonts -->
+
+    <!-- css -->
+    <style type="text/css">
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        html[lang=nl] .sidebar {
+            padding-left: 15px;
+        }
+        html[lang=nl] .sidebar--label {
+            display: inline-block;
+            width: 100%;
+            max-width: 106px;
+            margin-top: -2px;
+        }
+        html[lang=nl] .sidebar--item-align-right {
+            display: inline-block;
+            margin-right: 10px;
+            width: 60px;
+            text-align: right;
+        }
+
+        body {
+            width: 21cm;
+            height: 100%;
+            min-height: 29.7cm;
+            position: relative;
+            margin: 0;
+            padding: 0 0;
+            color: #333333;
+            line-height: 22px;
+         font: 12px "Source Sans Pro", Arial;
+                    font-style: normal;
+        }
+
+        h1 {
+            font-style: normal;
+            font-size: 30px;
+            margin: 0 0 20px 0;
+            padding: 13px 0 15px 0;
+            font-weight: 600;
+            border-bottom: 1px solid #d2d2d2;
+        }
+        h1 span {
+            position: relative;
+            font-style: normal;
+            display: inline;
+            margin-right: 1px;
+            padding: 0;
+        }
+
+        h2 {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0;
+            padding: 0;
+        }
+
+        h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            padding: 0;
+            max-width: 430px;
+        }
+
+        p {
+            color: #4c4c4c;
+            line-height: 18px;
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            background: #d2d2d2;
+        }
+
+        .section--first-name {
+            display: inline-block;
+        }
+
+        .section--last-name {
+            display: inline-block;
+            position: relative;
+            left: 5px;
+        }
+
+        .sections {
+            left: 235px;
+            position: relative;
+            width: 535px;
+        }
+
+        .section {
+            position: relative;
+            width: 100%;
+            padding: 0;
+        }
+        .section p {
+            display: block;
+            font-style: normal;
+        }
+        .section:last-child {
+            border: none;
+        }
+        .section.section--summary {
+            margin-top: -10px;
+        }
+
+        .section--title {
+            display: block;
+            position: relative;
+            z-index: 99;
+            margin: 0 0 0 0;
+            font-weight: 600;
+            background: #fff;
+            padding: 15px 0 15px 0;
+            page-break-inside: avoid;
+            border-bottom: 1px solid #d2d2d2;
+        }
+        .section--title span {
+            display: inline-block;
+            margin-right: 0px;
+        }
+
+        .section--heading-group {
+            display: block;
+            padding: 15px 0 0 0;
+            margin: 0;
+            /*page-break-inside: avoid;*/
+        }
+
+        .section--list {
+            display: block;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .section--list.skills {
+            padding-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        .section--item {
+            display: block;
+            position: relative;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .section--item.skills {
+            display: inline-block;
+            padding-top: 8px;
+            padding-bottom: 0;
+            width: 100%;
+            margin: 0;
+            padding-left: 5px;
+        }
+        .section--item.skills h3 {
+            font-size: 13px;
+        }
+        .section--item.skills:last-child {
+            padding-bottom: 0;
+        }
+
+        .skills--label {
+            display: inline-block;
+            width: 175px;
+            margin: 5px 0 0 -5px;
+        }
+
+        .skills--level {
+            display: inline-block;
+            position: relative;
+            top: 0;
+            height: 7px;
+            width: 150px;
+            padding: 0;
+            margin: 0;
+            background: #eaeaea;
+            border-radius: 6px;
+        }
+
+        .skills--level-filler {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #b1b1b1;
+            border-radius: 6px;
+        }
+
+        .skills--stars {
+            display: inline-block;
+            position: relative;
+            top: 4px;
+        }
+        .skills--stars svg {
+            fill: #b1b1b1;
+        }
+        .skills--stars svg.active {
+            fill: #2b2b38;
+        }
+
+        .section--date {
+            position: absolute;
+            right: 0;
+            text-align: right;
+            top: 16px;
+            width: 125px;
+             width: 125px;            font-size: 13px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .section--heading {
+            display: block;
+            padding: 0;
+            margin: 0;
+        }
+
+        .section--sub-heading {
+            display: block;
+            padding: 3px 0 0 0;
+            margin: 0;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .section--content {
+            display: block;
+            padding: 5px 0 0 0;
+            margin: 0;
+        }
+        .section--content p {
+            display: block;
+        }
+        .section--content ul, .section--content ol {
+            white-space: normal;
+            font-weight: 400;
+            list-style-position: outside;
+            color: #4c4c4c;
+            margin: 0;
+            padding: 0 0 0 16px;
+            text-align: left;
+        }
+        .section--content ul li, .section--content ol li {
+            line-height: 18px;
+        }
+        .section--content ul li strong, .section--content ol li strong {
+            display: inline-block;
+            text-align: left;
+        }
+        .section--content ul li {
+            list-style-type: disc;
+        }
+        .section--content ol {
+            padding-left: 14px;
+        }
+
+        .section--content-single-textarea {
+            padding-top: 10px;
+        }
+
+        .sidebar--bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 215px;
+            background: #2b2b38;
+            height: 18000px;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        .sidebar {
+            left: 0;
+            overflow: hidden;
+            position: absolute;
+            color: #fff;
+            padding: 29px 0 0 20px;
+            width: 215px;
+            height: auto;
+        }
+        .sidebar.sidebar--no-avatar {
+            padding-top: 16px;
+        }
+
+        .avatar {
+            display: inline-block;
+            padding: 0;
+            margin: 0 0 0 9px;
+            height: 155px;
+            width: 155px;
+            border-radius: 50%;
+            background-size: cover !important;
+        }
+
+        .sidebar--data {
+            display: block;
+        }
+
+        .sidebar--title {
+            font-size: 15px;
+            font-style: normal;
+            padding: 20px 0 11px 0;
+            margin: 0 0 10px 0;
+            page-break-inside: avoid;
+            border-bottom: 1px solid #fff;
+        }
+        .sidebar--title span {
+            font-weight: 400;
+            font-style: normal;
+            margin-right: 0px;
+        }
+
+        .sidebar--title svg {
+            position: relative;
+            top: 4px;
+            margin-right: 4px;
+        }
+
+        .sidebar--label {
+            font-weight: 600;
+        }
+
+        .sidebar--list {
+            display: block;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar--item {
+            display: block;
+            list-style: none;
+            font-size: 12px;
+            margin: 0;
+            page-break-inside: avoid;
+            padding: 8px 5px 0 0;
+        }
+        .sidebar--item:last-child {
+            padding-bottom: 0;
+        }
+
+        .sidebar--item-text {
+            line-height: 21px;
+        }
+
+        .sidebar--item-align-right {
+            float: right;
+            margin-right: 20px;
+        }
+
+        .c--434a54 .sidebar--bg, .c--434a54 .skills--level-filler {
+            background: #434a54 !important;
+        }
+
+        .c--efa100 .sidebar--bg, .c--efa100 .skills--level-filler {
+            background: #efa100 !important;
+        }
+
+        .c--3f6592 .sidebar--bg, .c--3f6592 .skills--level-filler {
+            background: #3f6592 !important;
+        }
+
+        .c--d770ad .sidebar--bg, .c--d770ad .skills--level-filler {
+            background: #d770ad !important;
+        }
+
+        .c--da4453 .sidebar--bg, .c--da4453 .skills--level-filler {
+            background: #da4453 !important;
+        }
+
+        strong { white-space: nowrap; }
+
+        /* Direction RTL overrides */
+        html[dir="rtl"] h1 span {
+            margin-right: initial;
+            margin-left: 1px;
+        }
+
+        html[dir="rtl"] p {
+            text-align: right;
+        }
+
+        html[dir="rtl"] .section--last-name {
+            left: initial;
+            right: 5px;
+        }
+
+        html[dir="rtl"] .sections {
+            left: initial;
+            right: 235px;
+        }
+
+        html[dir="rtl"] .section--title span {
+            margin-right: initial;
+            margin-left: 0;
+        }
+
+        html[dir="rtl"] .section--item.skills {
+            padding-left: initial;
+            padding-right: 5px;
+        }
+
+        html[dir="rtl"] .skills--label {
+            margin-left: 0;
+            margin-right: -5px;
+        }
+
+        html[dir="rtl"] .skills--level-filler {
+            left: initial;
+            right: 0;
+        }
+
+        html[dir="rtl"] .section--date {
+            right: initial;
+            left: 0;
+            text-align: left;
+        }
+
+        html[dir="rtl"] .section--content ul, html[dir="rtl"] .section--content ol {
+            padding-left: 0;
+            padding-right: 16px;
+            text-align: right;
+        }
+
+        html[dir="rtl"] .section--content ul li strong, html[dir="rtl"] .section--content ol li strong {
+            text-align: right;
+        }
+
+        html[dir="rtl"] .section--content ol {
+            padding-left: initial;
+            padding-right: 14px;
+        }
+
+        html[dir="rtl"] .sidebar--bg {
+            left: initial;
+            right: 0;
+        }
+
+        html[dir="rtl"] .sidebar {
+            left: 0;
+            right: 0;
+            padding-left: 0;
+            padding-right: 20px;
+        }
+
+        html[dir="rtl"] .avatar {
+            margin-left: 0;
+            margin-right: 9px;
+        }
+
+        html[dir="rtl"] .sidebar--title span {
+            margin-right: initial;
+            margin-left: 0;
+        }
+
+        html[dir="rtl"] .sidebar--title svg {
+            margin-right: initial;
+            margin-left: 4px;
+        }
+
+        html[dir="rtl"] .sidebar--item-align-right {
+            float: left;
+            margin-right: initial;
+            margin-left: 20px;
+        }
+    </style>
+    <!-- ./css -->
+
+</head>
+<body class="c--434a54" style="overflow: hidden !important;">
+
+<div class="sidebar--bg"></div>
+
+<aside class="sidebar  ">
+
+            <div class="avatar" style="background:url('https://cvmaker-storage.s3.eu-west-3.amazonaws.com/img/avatar/4ba785f13065b99bd0714225b70591a26cb5c3c9.jpg') no-repeat;">&nbsp;
+        </div>
+    
+
+    <div class="sidebar--data">
+        <h2 class="sidebar--title">
+            Personal
+        </h2>
+
+        <ul class="sidebar--list">
+            <li class="sidebar--item">
+                <span class="sidebar--label">Name</span><br>
+                                    Beman Ehab
+                            </li>
+
+
+                        <li class="sidebar--item">
+                <span class="sidebar--label">Address</span><br>
+                Nasir Institute, El Sahel, Shoubra Masr, Cairo, Egypt                <br>
+                                    01010 Shoubra
+                            </li>
+            
+
+                            <li class="sidebar--item">
+                    <span class="sidebar--label">Phone number</span><br>
+                                        <span dir="ltr">01210920616</span>
+                </li>
+            
+
+            <li class="sidebar--item">
+                <span class="sidebar--label">Email</span><br>
+                beman2902@gmail.com
+            </li>
+
+                            <li class="sidebar--item">
+                    <span class="sidebar--label">Date of birth</span><br>
+                                            29-09-2002
+                                    </li>
+            
+                            <li class="sidebar--item">
+                    <span class="sidebar--label">Place of birth</span><br>
+                    Cairo
+                </li>
+            
+                            <li class="sidebar--item">
+                    <span class="sidebar--label">Gender</span><br>
+                                            Male
+                                    </li>
+            
+                            <li class="sidebar--item">
+                    <span class="sidebar--label">Nationality</span><br>
+                    Egyptian
+                </li>
+            
+                            <li class="sidebar--item">
+                    <span class="sidebar--label">Marital status</span><br>
+                                            Single
+                                    </li>
+            
+
+            
+            
+                            <li class="sidebar--item">
+                    <span class="sidebar--label">LinkedIn</span><br>
+                    https://www.linkedin.com/in/beman-ehab-23aa01225
+                </li>
+                    </ul>
+
+    </div>
+
+    
+
+        
+    
+
+        
+    
+
+        
+    
+
+        
+
+            
+                <div class="sidebar--data">
+                <h2 class="sidebar--title">
+                    Interests
+                </h2>
+
+                <ul class="sidebar--list">
+                                                                        <li class="sidebar--item">
+                                <span class="sidebar--label">Programming</span>
+                            </li>
+                                                                                                <li class="sidebar--item">
+                                <span class="sidebar--label">Electronics &amp; Robotics</span>
+                            </li>
+                                                                                                <li class="sidebar--item">
+                                <span class="sidebar--label">Travelling</span>
+                            </li>
+                                            
+                </ul>
+
+            </div>
+                    
+    
+
+        
+            
+
+        
+    
+
+        
+    
+
+        
+                            <div class="sidebar--data">
+                    <h2 class="sidebar--title">
+                        Languages
+                    </h2>
+
+                    <ul class="sidebar--list">
+                                                                                    <li class="sidebar--item">
+                                    <span class="sidebar--label">Arabic</span>
+                                    <span class="sidebar--item-align-right">Native</span>
+                                </li>
+                                                                                                                <li class="sidebar--item">
+                                    <span class="sidebar--label">English</span>
+                                    <span class="sidebar--item-align-right">Intermediate</span>
+                                </li>
+                                                                        </ul>
+
+                </div>
+            
+        
+    
+
+        
+    
+
+        
+    
+
+        
+    
+</aside>
+
+<section class="sections">
+
+    <div class="section--name">
+        <h1>
+                            Beman Ehab
+                    </h1>
+    </div>
+
+    
+        
+            <div class="section">
+
+                
+                    <div class="section section--summary">
+                        <div class="section--content">
+                            <p>Applying for El Gouna Summer internship 2022 - Orascom Construction Egypt</p>
+                        </div>
+                    </div>
+
+                
+            </div>
+
+        
+
+    
+        
+            
+                <div class="section">
+
+                    <div class="section--title">
+                        <h2>
+                            Education and Qualifications
+                        </h2>
+                    </div>
+
+                    <ol class="section--list">
+                        
+                        <li class="section--item">
+                            <div class="section--heading-group">
+                                <div class="section--date">
+                                    2018 - 2020
+                                </div>
+                                <div class="section--heading">
+                                    <h3>General Secondary</h3>
+                                </div>
+                                <div class="section--sub-heading">
+                                    Future 10 Language School, Cairo                                </div>
+
+                                                                    <div class="section--content">
+                                        <p>Graduated From General Secondary School with degree <strong>94.51%</strong></p>
+                                    </div>
+                                                            </div>
+                        </li>
+                        
+                        <li class="section--item">
+                            <div class="section--heading-group">
+                                <div class="section--date">
+                                    2021 - 2025
+                                </div>
+                                <div class="section--heading">
+                                    <h3>Bachelor in Engineering</h3>
+                                </div>
+                                <div class="section--sub-heading">
+                                    Shoubra Faculty of Engineering, Cairo                                </div>
+
+                                                                    <div class="section--content">
+                                        <p>I study engineering at second year electrical power department <strong>(GPA: 3.04)</strong></p>
+                                    </div>
+                                                            </div>
+                        </li>
+                                            </ol>
+
+                </div>
+            
+        
+
+    
+        
+            
+                <div class="section">
+
+                    <div class="section--title">
+                        <h2>
+                            Work experience
+                        </h2>
+                    </div>
+
+                    <div class="section--time-line-overlay"></div>
+
+                    <ol class="section--list">
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">Jul 2022</div>
+                                    <div class="section--heading">
+                                        <h3>Monorail Project Summer Training</h3>
+                                    </div>
+                                    <div class="section--sub-heading">
+                                        Orascom Construction, Cairo                                    </div>
+                                </div>
+                                                                    <div class="section--content">
+                                        <p>Monorail Project Summer Training Studying all departments for 2 weeks one for lectures and the other for site visit</p>
+                                    </div>
+                                                            </li>
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">Aug 2022</div>
+                                    <div class="section--heading">
+                                        <h3>Electrical Summer Training</h3>
+                                    </div>
+                                    <div class="section--sub-heading">
+                                        Arab Contractors Co., Cairo                                    </div>
+                                </div>
+                                                                    <div class="section--content">
+                                        <p>Arab contractors Summer training for one week in electrical power department</p>
+                                    </div>
+                                                            </li>
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">2022</div>
+                                    <div class="section--heading">
+                                        <h3>Power Supply Project</h3>
+                                    </div>
+                                    <div class="section--sub-heading">
+                                        Shoubra Faculty of Engineering, Cairo                                    </div>
+                                </div>
+                                                                    <div class="section--content">
+                                        <p>I was ordered by my professor to create a hand made variable dc power supply</p><p><strong>please check Project Report:</strong></p><p><a href="https://drive.google.com/file/d/1J4jPbmi7Nji1ZrcvHQu1xX4qam0ZH2gA/view?usp=drivesdk">https://drive.google.com/file/d/1J4jPbmi7Nji1ZrcvHQu1xX4qam0ZH2gA/view?usp=drivesdk</a></p>
+                                    </div>
+                                                            </li>
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">2021</div>
+                                    <div class="section--heading">
+                                        <h3>Robotics Compitition</h3>
+                                    </div>
+                                    <div class="section--sub-heading">
+                                        IEEE Benha University, Cairo                                    </div>
+                                </div>
+                                                                    <div class="section--content">
+                                        <p>i have entered Robotics group competition as a <strong>Team leader</strong> where each team a small car with <strong>Arduino and motors</strong> to race in the match my team had taken the <strong><u>1st place</u></strong></p>
+                                    </div>
+                                                            </li>
+                                            </ol>
+                </div>
+            
+        
+
+    
+        
+
+    
+        
+            
+                <div class="section">
+
+                    <div class="section--title">
+                        <h2>
+                            Skills
+                        </h2>
+                    </div>
+
+                    <div class="section--time-line-overlay"></div>
+
+                    <ol class="section--list skills">
+
+                                                                                    <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>Microsoft office</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:100%;"></div>
+                                    </div>
+                                </li>
+                                                                                                                <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>Communication</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:100%;"></div>
+                                    </div>
+                                </li>
+                                                                                                                <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>Team Working</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:75%;"></div>
+                                    </div>
+                                </li>
+                                                                                                                <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>Wise Thinking</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:75%;"></div>
+                                    </div>
+                                </li>
+                                                                                                                <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>Arduino</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:25%;"></div>
+                                    </div>
+                                </li>
+                                                                                                                <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>Autocad</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:25%;"></div>
+                                    </div>
+                                </li>
+                                                                                                                <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>Python</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:25%;"></div>
+                                    </div>
+                                </li>
+                                                                                                                <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>C/C++</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:25%;"></div>
+                                    </div>
+                                </li>
+                                                                                                                <li class="section--item skills">
+                                    <div class="skills--label">
+                                        <h3>Frontend Web Development</h3>
+                                    </div>
+                                    <div class="skills--level">
+                                        <div class="skills--level-filler" style="width:20%;"></div>
+                                    </div>
+                                </li>
+                                                    
+                    </ol>
+
+                </div>
+            
+        
+
+    
+        
+                            <div class="section">
+
+                    <div class="section--title">
+                        <h2>Courses</h2>
+                    </div>
+
+                    <div class="section--time-line-overlay"></div>
+
+                    <ol class="section--list">
+
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">
+                                        2021
+                                    </div>
+                                    <div class="section--heading">
+                                        <h3>AutoCAD</h3>
+                                    </div>
+                                    <div class="section--sub-heading">EIT</div>
+
+                                                                            <div class="section--content">
+                                            <p>General AutoCAD Course at Engineering Innovation Team (EIT) Shoubra Faculty of Engineering <strong>Check Certifacte: https://drive.google.com/file/d/1JKmBXmjuX-X04n3nL4wwLTVKyk1VzofK/view</strong>
+</p>
+                                        </div>
+                                                                    </div>
+                            </li>
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">
+                                        2022
+                                    </div>
+                                    <div class="section--heading">
+                                        <h3>Robotics-6 Workshop</h3>
+                                    </div>
+                                    <div class="section--sub-heading">IEEE Benha University</div>
+
+                                                                            <div class="section--content">
+                                            <p>Institute of Electrical and Electronic Engineering (IEEE) Benha university workshop and the 1st place in the competition <strong>Check Certificate : https://drive.google.com/file/d/1JZAd8XE05E2lj4y9JgvVRtiBzKCXv9aX/view</strong></p>
+                                        </div>
+                                                                    </div>
+                            </li>
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">
+                                        2021
+                                    </div>
+                                    <div class="section--heading">
+                                        <h3>Web Development</h3>
+                                    </div>
+                                    <div class="section--sub-heading">John Hopkins University</div>
+
+                                                                            <div class="section--content">
+                                            <p>HTML, CSS, and JavaScript Course on Coursera platform provided by Coursera <strong>Check Certificate : https://drive.google.com/file/d/1J_-XJ2t4fdcbql9j5cpHxdLyCfMNjXQj/view</strong></p>
+                                        </div>
+                                                                    </div>
+                            </li>
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">
+                                        2021
+                                    </div>
+                                    <div class="section--heading">
+                                        <h3>English B2</h3>
+                                    </div>
+                                    <div class="section--sub-heading">Mc Graw Hill</div>
+
+                                                                            <div class="section--content">
+                                            <p>English B2 Course provided by the American Educational publishing company Mc Graw Hill on Busuu platform <strong>Check Certificate : https://drive.google.com/file/d/1JRYTZg5Z7gEQDTyEhDSb9ZyPCTV0RfnY/view</strong></p>
+                                        </div>
+                                                                    </div>
+                            </li>
+                                                    <li class="section--item">
+                                <div class="section--heading-group">
+                                    <div class="section--date">
+                                        2022
+                                    </div>
+                                    <div class="section--heading">
+                                        <h3>Industrial Distribution &amp; Electrical Control Systems</h3>
+                                    </div>
+                                    <div class="section--sub-heading">Nile Pharmaceutical Co.</div>
+
+                                                                            <div class="section--content">
+                                            <p><p>Industrial Distribution &amp; Electrical Control System Online lectures on Global Science &amp; Knowledge <b>(GSK)</b>
+ Platform and 2 days For Site Visit</p>
+ <strong>Check Certificate : https://drive.google.com/file/d/1JTP3YsuPwBI_7Xs5ckixwMxKOoOOFO_K/view</strong>
+</p>
+                                        </div>
+                                                                    </div>
+                            </li>
+                                            </ol>
+                </div>
+            
+
+        
+
+    
+        
+            
+        
+
+    
+        
+                            <div class="section">
+
+                    <div class="section--title">
+                        <h2>
+                            References
+                        </h2>
+                    </div>
+
+                    
+                        <div class="section--content section--content-single-textarea">
+                            <p>All references are available upon request.</p>
+                        </div>
+                    
+                </div>
+            
+        
+
+    
+        
+
+    
+        
+
+    
+
+</section>
+
+
+
+</body></html>
